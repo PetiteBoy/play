@@ -1,0 +1,14 @@
+body{
+  display: flex;
+}
+
+.login{
+  height: 40px;
+}
+.list{
+  flex: 1;
+}
+
+.footer{
+  height: 40px;
+}

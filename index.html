@@ -4,23 +4,105 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+    }
+    body{
+    height: 100vh;
+  }
+
+  .login{
+    height: 40px;
+    
+  }
+  .list{
+    height: calc(100vh - 102px);
+    max-height: calc(100vh - 102px);
+    overflow: auto;
+    border: 1px solid #000000;
+    margin: 10px;
+  }
+
+  .item{
+    height: 20px;
+    margin-top: 5px;
+  }
+
+  .footer{
+    height: 40px;
+  }
+  </style>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 </head>
 <body>
-  <button id='send-btn'>发送</button>
+  <div class="login">
+    <input id="name" type="text" placeholder="你叫啥呢？">
+    <button id="setName">注册</button>
+  </div>
+  <div class="list" id="list"></div>
+  <div class="footer">
+    <input id="msg" type="text" placeholder="你想对大家说点啥？">
+    <button id="sendBtn">发送</button>
+  </div>
 </body>
 <script>
+
+  let nameDom = document.querySelector('#name');
+  let setNameDom = document.querySelector('#setName');
+  let msgDom = document.querySelector('#msg');
+  let sendBtnDom = document.querySelector('#sendBtn');
+  let list = [];
+
+  let isLogin = false;
+
+  setNameDom.addEventListener('click',() =>{
+    let nameVal = nameDom.value;
+    if(!nameVal){
+      alert('让大家知道你叫什么吧');
+      return;
+    }
+
+    socket.emit('self online',nameVal)
+  })
+
+  sendBtnDom.addEventListener('click',()=>{
+    let msgVal = msgDom.value;
+    let nameVal = nameDom.value;
+
+    if(!nameVal){
+      alert('让大家知道你叫什么吧');
+      return;
+    }
+
+    if(!msgVal){
+      alert('说点啥吧');
+      return;
+    }
+
+    socket.emit('chat msg',`${nameVal}说:${msgVal}`)
+  })
   
   let socket = io();
-  let sendBtn = document.querySelector("#send-btn");
 
-  sendBtn.addEventListener('click',() =>{
-    socket.emit('chat message',`这是一条消息${new Date().getTime()}`)
+  socket.on('chat msg',(msg) =>{
+    // list.push(msg);
+    addList(msg)
   })
 
-  socket.on('chat message',(msg)=>{
-    console.log(msg)
+   socket.on('user online',(name) =>{
+    alert(`${name}上线了`)
   })
+
+  function addList(msg){
+    let listDom = document.querySelector('#list');
+    let itemDom = document.createElement('p');
+    itemDom.className = 'item'
+      itemDom.innerHTML = msg
+      listDom.appendChild(itemDom)
+  }
+ 
+  
 </script>
 </html>
