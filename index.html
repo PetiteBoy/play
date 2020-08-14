@@ -17,6 +17,11 @@
     height: 40px;
     
   }
+  .login-tips{
+    float: right;
+    color: red;
+    font-size: 12px;
+  }
   .list{
     height: calc(100vh - 102px);
     max-height: calc(100vh - 102px);
@@ -40,6 +45,7 @@
   <div class="login">
     <input id="name" type="text" placeholder="你叫啥呢？">
     <button id="setName">注册</button>
+    <p id="loginTips" class="login-tips"></p>
   </div>
   <div class="list" id="list"></div>
   <div class="footer">
@@ -81,19 +87,43 @@
       return;
     }
 
-    socket.emit('chat msg',`${nameVal}说:${msgVal}`)
+    socket.emit('chat msg', {
+      msg: msgVal,
+      name: nameVal,
+      time: new Date().getTime()
+    })
+    msgDom.value = ''
   })
   
   let socket = io();
 
-  socket.on('chat msg',(msg) =>{
-    // list.push(msg);
-    addList(msg)
-  })
+  // 实时消息
+  socket.on('chat msg',({msg,name,time}) =>{
+    // addList(msg)
+  });
 
+  // 用户登录
    socket.on('user online',(name) =>{
-    alert(`${name}上线了`)
-  })
+    let nameVal = nameDom.value;
+    if(name === nameVal){
+      return;
+    }
+    let loginTips = document.querySelector('#loginTips');
+    loginTips.innerHTML = `${name}上线了`
+    setTimeout(() => {
+      loginTips.innerHTML = ''
+    }, 5000);
+   });
+
+  // 历史消息
+  socket.on('history',(list) =>{
+    console.log(list)
+   });
+
+    socket.on('isOnline',() =>{
+      let nameVal = nameDom.value;
+      socket.emit('isOnline',nameVal)
+   });
 
   function addList(msg){
     let listDom = document.querySelector('#list');
@@ -103,6 +133,5 @@
       listDom.appendChild(itemDom)
   }
  
-  
 </script>
 </html>

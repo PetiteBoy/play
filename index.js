@@ -4,9 +4,11 @@ let http = require('http').createServer(app);
 
 let io = require('socket.io')(http);
 
-let userList = [];
+let userList = new Set();
 
 let onlineList = [];
+
+let msgList = [];
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html')
@@ -15,20 +17,24 @@ app.get('/', (req, res) => {
 
 io.on('connect', (socket) => {
 
-  // 新消息过来了
-  socket.on('chat msg', (msg) => {
-    io.emit('chat msg', msg)
+  // 实时新消息
+  socket.on('chat msg', (params) => {
+    io.emit('chat msg', params);
+  });
 
-  })
-
+  // 用户登录
   socket.on('self online', (name) => {
-    userList.push(name);
-    console.log(name)
-    io.emit('user online', name)
+    io.emit('user online', name);
   })
 
+  // 用户离开
   socket.on('disconnect', () => {
-    console.log('用户断开链接')
+    console.log('用户断开链接');
+    io.emit('isOnline');
+  });
+
+  socket.on('isOnline', (name) => {
+
   })
 
 })
