@@ -3,9 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>启航</title>
+  <title>Document</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 </head>
 <body>
-  <div>这是我的第一个小项目</div>
+  <button id='send-btn'>发送</button>
 </body>
+<script>
+  
+  let socket = io();
+  let sendBtn = document.querySelector("#send-btn");
+
+  sendBtn.addEventListener('click',() =>{
+    socket.emit('chat message',`这是一条消息${new Date().getTime()}`)
+  })
+
+  socket.on('chat message',(msg)=>{
+    console.log(msg)
+  })
+</script>
 </html>
