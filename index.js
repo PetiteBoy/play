@@ -39,6 +39,6 @@ io.on('connect', (socket) => {
 
 })
 
-http.listen(3000, () => {
+http.listen(80, () => {
   console.log('服务启动了')
 })
